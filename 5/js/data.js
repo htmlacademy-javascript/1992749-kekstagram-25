@@ -24,7 +24,7 @@ const createComment = () => {
 const createPhoto = () => {
   const arr = [];
   let currentDescription;
-  for (let i = 1; i <= 25; i++) {
+  for (let i = 1; i <= 25; i++) { //
     currentDescription = descriptionsList[i];
     const photo = {
       id: i, //"Это число от 1 до 25"
