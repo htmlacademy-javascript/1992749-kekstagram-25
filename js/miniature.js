@@ -14,11 +14,15 @@ const photoDocumentFragment = document.createDocumentFragment(); // создад
 
 similarPhoto.forEach((photo) => {
   const cloneTemplate = pictureTemplate.cloneNode(true); // клонируем шаблон
-  cloneTemplate.querySelector('.picture__img').src = photo.url; // заполним шаблон информацией
-  cloneTemplate.querySelector('.picture__likes').textContent = photo.likes; // заполним шаблон информацией
-  cloneTemplate.querySelector('.picture__comments').textContent = photo.comments.length; // заполним шаблон информацией
+  cloneTemplate.querySelector('.picture__img').src = photo.url; // адрес url как атрибут src
+  cloneTemplate.querySelector('.picture__likes').textContent = photo.likes; // количество лайков
+  cloneTemplate.querySelector('.picture__comments').textContent = photo.comments.length; // количество комментариев
+  // Добавим код с description в шаблон, ибо во второй части нужно наступило
+  cloneTemplate.querySelector('.picture__img').alt = photo.description; // описание фотографии
   photoDocumentFragment.appendChild(cloneTemplate); // вставим шаблон в контейнер для изображений
 });
 pictures.appendChild(photoDocumentFragment);
-//console.log(pictures); // рисует три правильных фото на странице
 
+//console.log(similarPhoto);
+
+export {similarPhoto}; // экспорт в самом низу кода
