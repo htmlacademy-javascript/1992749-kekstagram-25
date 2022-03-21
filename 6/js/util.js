@@ -22,4 +22,6 @@ function getRandomNum(min, max) {
 }
 getRandomNum(-2, 4);
 
-export {getRandomNum}; // экспорт в самом низу кода
+const isEscapeKey = (evt) => evt.key === 'Escape'; // короткая проверка для клавиши Escape
+
+export { getRandomNum, isEscapeKey}; // экспорт в самом низу кода
