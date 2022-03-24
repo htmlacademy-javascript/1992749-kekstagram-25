@@ -6,6 +6,8 @@
 // Отрисуйте сгенерированные DOM-элементы в блок .pictures. Для вставки элементов используйте DocumentFragment.
 
 import {createPhoto} from './data.js'; // импортируем модуль для генерации данных
+import {openBigPhoto} from './big-picture.js'; // для включения в forEach здесь и отрисовки большого фото в big-picture.js
+
 const pictures = document.querySelector('.pictures'); // Контейнер для изображений от других пользователей
 const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture'); // Шаблон для фотографий
 
@@ -14,11 +16,16 @@ const photoDocumentFragment = document.createDocumentFragment(); // создад
 
 similarPhoto.forEach((photo) => {
   const cloneTemplate = pictureTemplate.cloneNode(true); // клонируем шаблон
-  cloneTemplate.querySelector('.picture__img').src = photo.url; // заполним шаблон информацией
-  cloneTemplate.querySelector('.picture__likes').textContent = photo.likes; // заполним шаблон информацией
-  cloneTemplate.querySelector('.picture__comments').textContent = photo.comments.length; // заполним шаблон информацией
+  cloneTemplate.querySelector('.picture__img').src = photo.url; // адрес url как атрибут src
+  cloneTemplate.querySelector('.picture__likes').textContent = photo.likes; // количество лайков
+  cloneTemplate.querySelector('.picture__comments').textContent = photo.comments.length; // количество комментариев
+  cloneTemplate.querySelector('.picture__img').alt = photo.description; // описание фотографии
   photoDocumentFragment.appendChild(cloneTemplate); // вставим шаблон в контейнер для изображений
+
+  cloneTemplate.addEventListener('click', () => {openBigPhoto(photo);}); // для отрисовки большого фото в big-picture.js
+
 });
 pictures.appendChild(photoDocumentFragment);
-//console.log(pictures); // рисует три правильных фото на странице
+
+export {similarPhoto}; // экспорт в самом низу кода
 
