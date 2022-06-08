@@ -1,70 +1,59 @@
-//
-import { isEscapeKey } from './util.js'; // короткая проверка на true для клавиши Escape
 
-// Это блок const для большого фото
-const bigPicturePreview = document.querySelector('.big-picture__preview'); // большое фото
-const bigPictureShow = document.querySelector('.big-picture'); // Здесь класс 'hidden' скрывает большое фото
-const socialCommentCount = document.querySelector('.social__comment-count'); // Блок счётчика комментариев
-const commentsLoader = document.querySelector('.comments-loader'); // Блок счётчика загрузки новых комментариев
+const bigPictureOverlay = document.querySelector('.big-picture'); // Полноэкранный показ изображения
+const currentBigPicture = document.querySelector('.big-picture__img img'); // текущее изображение для полноэкранного показа
+const likesCountPicture = document.querySelector('.likes-count'); // Количество лайков текущего изображения
+const commentsCountPicture = document.querySelector('.comments-count'); // Количество комментариев текущего изображения
+const descriptionCountPicture = document.querySelector('.social__caption'); // Описание фотографии текущего изображения
+const blockCommentsCountPicture = document.querySelector('.social__comment-count'); // Блоки счётчика комментариев текущего изображения
+const blockCommentsLoaderPicture = document.querySelector('.comments-loader'); // Блок загрузки новых комментариев текущего изображения
+const body = document.querySelector('body'); // Тег <body> для фиксации контейнера с фотографиями позади во время полноэкранного показа
 
-// Это блок const для комментариев на большом фото:
-const commentTemplate = document.querySelector('.social__comments li'); // Шаблон из Первого комментария от других пользователей
-const commentDocumentFragment = document.createDocumentFragment(); // создадим DocumentFragment для комментариев
-const boxForComments = document.querySelector('.social__comments'); // Коробка под комментарии
-boxForComments.innerHTML = ''; // Пустая коробка - остаётся только <ul class="social__comments"></ul>
+const socialComments = document.querySelector('.social__comments'); // Блок комментариев под фотографией
+const templateComment = document.createElement('li'); // Готовим шаблон под комментарии от пользователей
+templateComment.classList.add('social__comment');
+const elementHTML = '<img class="social__picture" src="img/avatar-2.svg" alt="Аврелий" width="35" height="35"><p class="social__text"></p>';
+templateComment.innerHTML = elementHTML;
 
-// Это кнопка  Escape для закрытия окна большого фото
-const onBigPictureShowEscKeydown = (evt) => {
-  if (isEscapeKey(evt)) {
-    bigPictureShow.classList.add('hidden'); // Вернём класс 'hidden', спрячем большое фото
-    document.querySelector('body').classList.remove('modal-open'); // вернём скролл на контейнер с фото позади большого фото
-    //document.removeEventListener('keydown', onBigPictureShowEscKeydown); // Это удаление кнопки Escape
-    boxForComments.innerHTML = ''; // Очистим коробку с комментариями
+const onCloseButtonEscKeydown = function(evt) { // ESC Полноэкранный показ изображения закрыть
+  if (evt.key === 'Escape') {
+    bigPictureOverlay.classList.add('hidden');
+    body.classList.remove('modal-open'); // Возвращаем скролл на экран
+    document.removeEventListener('keydown', onCloseButtonEscKeydown); // Удалим обработчик ESC
   }
 };
-document.addEventListener('keydown', onBigPictureShowEscKeydown); // Это вызов кнопки Escape
 
-// Код для закрытия окна большого фото
-const closeButtonBigPicture = document.querySelector('.big-picture__cancel'); //
+const bigPictureCloseButton = document.querySelector('.big-picture__cancel'); // Кнопка для выхода из полноэкранного просмотра изображения
+bigPictureCloseButton.addEventListener('click', () => { // Полноэкранный показ изображения закрыть
+  bigPictureOverlay.classList.add('hidden');
+  body.classList.remove('modal-open'); // Возвращаем скролл на экран
+  document.removeEventListener('keydown', onCloseButtonEscKeydown); // удалим обработчик ESC
+});
 
-closeButtonBigPicture.addEventListener('click', () => {
-  bigPictureShow.classList.add('hidden'); // Вернём класс 'hidden', спрячем большое фото
-  document.querySelector('body').classList.remove('modal-open'); // вернём скролл на контейнер с фото позади большого фото
-  boxForComments.innerHTML = ''; // Очистим коробку с комментариями
-}); // click
+const showBigImage = function(image) {
+  bigPictureOverlay.classList.remove('hidden'); // Полноэкранный показ изображения открыть
+  document.addEventListener('keydown', onCloseButtonEscKeydown); // Обработчик на Esc, чтобы закрыть показ изображения
+  currentBigPicture.src = image.url; // Текущее изображение для полноэкранного показа
+  likesCountPicture.textContent = image.likes; // Количество лайков текущего изображения
+  commentsCountPicture.textContent = image.comments.length; // Количество комментариев текущего изображения
+  descriptionCountPicture.textContent = image.description; // Описание фотографии текущего изображения
+  blockCommentsCountPicture.classList.add('hidden'); // Блоки счётчика комментариев текущего изображения 'временно убираем'
+  blockCommentsLoaderPicture.classList.add('hidden'); // Блок загрузки новых комментариев текущего изображения 'временно убираем'
+  body.classList.add('modal-open'); // Фиксируем контейнер с фотографиями позади во время полноэкранного показа
 
-// openBigPhoto работает в модуле miniature.js внутри цикла cloneTemplate.addEventListener('click', () => {openBigPhoto(photo);});
-const openBigPhoto = (photo) => {
-  bigPictureShow.classList.remove('hidden'); // показываем большое фото
+  socialComments.innerHTML = ''; // Чистим блок комментариев под фотографией для заполнения текущими комментариями
+  image.comments.forEach((element) => {
 
-  // Записываем в значение src='url' большого фото новое значение src='url' фото из 25 эл-тов коллекции:
-  bigPicturePreview.querySelector('.big-picture__img img').src = photo.url;
+    const clone = templateComment.cloneNode(true);
+    clone.querySelector('img').src = element.avatar;
+    clone.querySelector('img').alt = element.name;
+    clone.querySelector('p').textContent = element.message;
+    socialComments.append(clone);
 
-  // Записываем в значение лайков большого фото новое значение лайков фото из 25 эл-тов коллекции:
-  document.querySelector('.likes-count').textContent = photo.likes;
+  });
 
-  // Записываем в значение комментариев большого фото новое значение комментариев фото из 25 эл-тов коллекции:
-  document.querySelector('.comments-count').textContent = photo.comments.length;
-
-  // Описание фотографии description вставьте строкой в блок .social__caption:
-  document.querySelector('.social__caption').textContent = photo.description;
-
-  // добавил <body> класс modal-open, чтобы контейнер с фото позади не прокручивался при скролле.
-  document.querySelector('body').classList.add('modal-open');
-
-  socialCommentCount.classList.add('hidden'); // Блок счётчика комментариев спрятали временно
-  commentsLoader.classList.add('hidden'); // Блок счётчика загрузки новых комментариев спрятали временно
-
-  // Блок комментариев под большим фото
-  for (let j = 0; j < photo.comments.length; j++) {
-    const cloneTemplateComment = commentTemplate.cloneNode(true); // клонируем шаблон для большого фото
-    cloneTemplateComment.querySelector('.social__text').textContent = photo.comments[j].message; //  комментарии в большом фото
-    cloneTemplateComment.querySelector('.social__comment img').src = photo.comments[j].avatar; // аватар комментатора
-    cloneTemplateComment.querySelector('.social__comment img').alt = photo.comments[j].name; // имя комментатора
-
-    commentDocumentFragment.appendChild(cloneTemplateComment); // сохраним шаблон большого фото
-  }
-  boxForComments.appendChild(commentDocumentFragment); // добавление комментария в блок .social__comments
 };
 
-export { openBigPhoto }; // экспорт в самом низу кода
+
+export { showBigImage }; // Экспорт в самом низу кода
+
+
