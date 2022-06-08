@@ -18,7 +18,7 @@ import {showBigImage} from './big-picture.js';
 const templatePicture = document.querySelector('#picture').content.querySelector('.picture'); // Шаблон изображения случайного пользователя
 const picturesContainer = document.querySelector('.pictures'); // Контейнер для изображений от других пользователей
 const fragment = document.createDocumentFragment(); // Для вставки элементов используйте DocumentFragment
-const photoArchive = createPhotoArchive(25);
+const photoArchive = createPhotoArchive(4);
 
 const createImagesFromUsers = function() {
   photoArchive.forEach((element) => {
@@ -29,10 +29,8 @@ const createImagesFromUsers = function() {
     clone.querySelector('.picture__comments').textContent = element.comments.length; // Количество комментариев comments
 
     fragment.append(clone);
-    clone.addEventListener('click', () => {showBigImage(element);}); // обработчик события клика по текущему фото для big-picture.js
+    clone.addEventListener('click', () => {showBigImage(element);}); // Обработчик события клика по текущему фото для big-picture.js
   });
   picturesContainer.append(fragment);
 };
 createImagesFromUsers();
-
-
